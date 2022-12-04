@@ -3,11 +3,18 @@
     <q-header elevated>
       <q-toolbar style="background-color: #032b21cc">
         <q-toolbar-title class="text-weight-bolder text-white">
-          Accenture Philippines
-          <q-img :src="url" style="height: 45px; max-width: 55px" />
-          <span class="text-subtitle1 text-bold text-grey-5">
-            Blockchain Technology
-          </span>
+          <div class="row q-mt-md">
+            <div class="col-md-5">
+              <span> Accenture Philippines </span>
+              <q-img :src="url" style="height: 45px; max-width: 55px" />
+              <span class="text-subtitle1 text-bold text-grey-5">
+                Blockchain Technology
+              </span>
+            </div>
+            <span class="q-ml-xl"></span>
+            <span class="q-ml-xl text-h5 text-bold">The</span>
+            <span class="q-ml-sm text-warning text-h3 text-bold">NEXUS</span>
+          </div>
         </q-toolbar-title>
 
         <div>

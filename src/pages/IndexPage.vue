@@ -6,7 +6,7 @@
         arrows
         animated
         v-model="slide"
-        height="950px"
+        height="900px"
         control-color="blue-grey-14"
         control-type="push"
         :autoplay="autoplay"
@@ -52,18 +52,16 @@
         />
       </div>
     </div>
-    <div class="row q-ml-xl q-mb-md q-mt-lg">
-      <div class="col-md-8">
-        <span class="q-ml-xl"></span>
-        <span class="q-ml-xl"></span>
-        <span class="q-ml-xl"></span>
-        <span class="text-h4"> ETHEREUM </span>
+    <div class="row q-mt-md">
+      <div class="col-12 col-md-1 q-ml-xl"></div>
+      <div class="col-12 col-md-7 q-ml-xl">
+        <q-img :src="ethereum" style="height: 150px; max-width: 500px" />
       </div>
-      <div class="col-12 col-md-1">
-        <span class="text-h4"> SOLIDITY </span>
+      <div class="col-12 col-md-2 q-mt-sm">
+        <q-img :src="solidity" style="height: 110px; max-width: 500px" />
       </div>
     </div>
-    <div class="row q-ml-xl q-mb-md q-mt-lg">
+    <div class="row q-ml-xl q-mb-md q-mt-sm">
       <div class="col-12 col-md-6">
         <span class="text-subtitle1">
           A decentralized blockchain platform that establishes a peer-to-peer
@@ -80,6 +78,14 @@
         </span>
       </div>
     </div>
+    <div class="row q-ml-xl q-mb-sm">
+      <!-- <div class="col-12 col-md-6">
+        <q-img :src="ethereum" style="height: 150px; max-width: 500px" />
+      </div> -->
+      <!-- <div class="col-12 col-md-6 q-mt-sm">
+        <q-img :src="solidity" style="height: 110px; max-width: 500px" />
+      </div> -->
+    </div>
   </q-page>
 </template>
 
@@ -93,7 +99,8 @@ export default defineComponent({
 
   setup() {
     return {
-      url: require("app/src/assets/ico.jpeg"),
+      ethereum: require("app/src/assets/ethereum.png"),
+      solidity: require("app/src/assets/solidity.png"),
       image1: require("app/src/assets/blockchain1v2.jpg"),
       image2: require("app/src/assets/blockchain2.jpg"),
       image3: require("app/src/assets/blockchain3.jpg"),
