@@ -65,12 +65,12 @@
       <div class="col-12 col-md-6">
         <span class="text-subtitle1">
           A decentralized blockchain platform that establishes a peer-to-peer
-          network that securely executes and verifies application code, called
-          smart contracts. Smart contracts allow participants to transact with
-          each other without a trusted central authority.
+          network that securely executes and verifies application code,
+          <br />called smart contracts. Smart contracts allow participants to
+          transact with each other without a trusted central authority.
         </span>
       </div>
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6 q-ml">
         <span class="text-subtitle1">
           Solidity is an advanced programming language used for implementing
           Ethereum-based smart contracts. It's an object-oriented language that
