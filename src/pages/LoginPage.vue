@@ -74,9 +74,9 @@
                       color="teal-8"
                       label="Submit"
                       rounded
-                      type="submit"
-                      to="/admin"
+                      @click="testing"
                     ></q-btn>
+                    <!-- type="submit" -->
                     <div class="q-mt-lg">
                       <div class="q-mt-sm">
                         Forgot your username or password?
@@ -101,6 +101,43 @@
     </q-card>
   </div>
 
+  <div>
+    <q-dialog v-model="dialog1" persistent>
+      <q-card style="width: 500px">
+        <q-bar
+          class="bg-teal text-h6 text-white flex flex-center"
+          style="height: 40px"
+        >
+          Account Verified
+        </q-bar>
+        <q-card-section>
+          <div class="text-subtitle1 text-center text-grey-8">
+            Please connect crypto wallet to continue.
+          </div>
+        </q-card-section>
+        <q-card-actions align="center" class="bg-white text-teal">
+          <div class="text-center">
+            <div class="col-12 col-md-4 q-mb-md">
+              <q-btn
+                no-caps
+                :loading="loading"
+                @click="connectMetamask"
+                color="orange-7"
+                rounded
+                class="text-bold"
+                >Connect to Metamask
+                <template v-slot:loading>
+                  Connecting
+                  <q-spinner-dots class="q-ml-sm" color="white" size="1em" />
+                </template>
+              </q-btn>
+            </div>
+          </div>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </div>
+
   <!-- <div class="fullscreen text-dark text-center q-pa-md flex flex-center">
       <div>
         <div class="text-h1">Login Page</div>
@@ -122,18 +159,50 @@
 <script>
 import { defineComponent } from "vue";
 
+const provider = window.ethereum;
+
 export default defineComponent({
   name: "LoginPage",
 
   components: {},
 
-  setup() {
+  data() {
     return {
+      dialog1: false,
+      loading: false,
       user: {
         username: "",
         password: "",
       },
     };
+  },
+
+  async created() {},
+
+  methods: {
+    async testing() {
+      this.dialog1 = true;
+      // this.$router.push({ path: "/admin" });
+    },
+
+    async connectMetamask() {
+      if (provider) {
+        const res = await ethereum.request({ method: "eth_requestAccounts" });
+        const account = res[0];
+        this.currentAccount = account;
+        console.log(this.currentAccount);
+      } else {
+        console.log("Please Install Metamask!");
+      }
+
+      if (
+        this.currentAccount === "0x07465a0cde39d1fa5622d69055545435a99eaca0"
+      ) {
+        this.$router.push({ path: "/admin" });
+      } else {
+        this.$router.push({ path: "/user" });
+      }
+    },
   },
 });
 </script>

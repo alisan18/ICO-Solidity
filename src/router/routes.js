@@ -22,6 +22,11 @@ const routes = [
     path: "/admin",
     component: () => import("pages/AdminPage.vue"),
   },
+
+  {
+    path: "/user",
+    component: () => import("pages/UserPage.vue"),
+  },
 ];
 
 export default routes;
