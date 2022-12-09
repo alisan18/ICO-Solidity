@@ -23,14 +23,23 @@
             :disable="isConnected == true"
             @click="connectMetamask"
           />
-          <q-btn
-            class="text-subtitle2"
-            flat
-            color="white"
-            text-color="white"
-            label="ACCOUNT"
-            to="/"
-          />
+          <span>Test Network Goerli</span>
+          <q-btn class="q-ml-md" round dense>
+            <q-avatar size="45px">
+              <img :src="avatar" />
+            </q-avatar>
+            <q-menu style="width: 100px">
+              <q-list>
+                <q-item v-close-popup clickable>
+                  <q-item-section> My Profile </q-item-section>
+                </q-item>
+                <q-separator />
+                <q-item v-close-popup clickable to="/login">
+                  <q-item-section class="text-bold"> Logout </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -41,7 +50,7 @@
     <div
       class="underline text-h2 q-ml-md text-grey-9 flex flex-center text-bold"
     >
-      <span>Welcome User!</span>
+      <span>Welcome!</span>
     </div>
     <div class="q-mt-xl text-center flex flex-center">
       <div class="text-subtitle1">
@@ -49,14 +58,18 @@
         <span class="text-body1">{{ currentAccount }}</span>
       </div>
       <div class="text-subtitle1">
-        <span class="q-ml-xl text-grey-9 text-bold">Balance: </span>
+        <span class="q-ml-xl text-grey-9 text-bold">Wallet Eth balance: </span>
         <span class="text-body1">{{ ethBalance }}</span>
+      </div>
+      <div class="text-subtitle1">
+        <span class="q-ml-xl text-grey-9 text-bold">Token Balance: </span>
+        <span class="text-body1">450000000000</span>
       </div>
     </div>
     <div class="text-center flex flex-center">
       <div>
-        <span class="text-subtitle1 text-grey-9 text-bold">Account Type :</span>
-        <span class="text-body1">Admin</span>
+        <span class="text-subtitle1 text-grey-9 text-bold">Account Type: </span>
+        <span class="text-body1">User</span>
       </div>
       <div>
         <span class="q-ml-xl text-subtitle1 text-grey-9 text-bold"
@@ -68,54 +81,123 @@
 
     <q-separator class="q-mt-md" size="2px" color="teal" inset="" />
 
-    <div class="q-mt-xl q-pl-md q-pr-md">
-      <q-toolbar class="full-width bg-secondary">
+    <div class="q-mt-xl q-pl-xl q-pr-xl">
+      <q-toolbar class="full-width bg-teal">
         <q-toolbar-title class="text-white text-h6">
-          ICO CONTRACT FUNCTIONS
+          ATCP TOKEN INFORMATIONS
         </q-toolbar-title>
 
         <q-separator vertical size="2px" />
         <q-btn
           flat
           no-caps
-          label="Read Contract"
+          :label="showTokenInfo == true ? 'Hide' : 'Show'"
           color="white"
           class="text-h6"
           stretch
-          @click="showRead = !showRead"
+          @click="showTokenInfo = !showTokenInfo"
         />
         <q-separator vertical size="2px" />
-        <q-btn
-          flat
-          no-caps
-          label="Write Contract"
-          color="white"
-          class="text-h6"
-          stretch
-          @click="showWrite = !showWrite"
-        />
         <q-separator vertical size="2px" />
       </q-toolbar>
     </div>
 
-    <div class="q-pl-md q-pr-md">
+    <div class="q-pl-xl q-pr-xl">
       <q-slide-transition appear>
-        <q-card v-if="showRead">
+        <q-card v-if="showTokenInfo">
           <q-card-section>
-            <span> GET OWNER</span>
+            <div>
+              <span class="text-subtitle1 text-bold text-grey-9"> Name : </span>
+              <span class="text-subtitle1 q-ml-sm">
+                Accentue Blockchain Token</span
+              >
+              <span class="q-ml-xl text-subtitle1 text-bold text-grey-9">
+                Minimum Funding Amount :
+              </span>
+              <span class="text-subtitle1 q-ml-sm"> 50 usd</span>
+              <span class="text-subtitle1 q-ml-sm"> {{}}</span>
+            </div>
+            <div>
+              <span class="text-subtitle1 text-bold text-grey-9">
+                Symbol :
+              </span>
+              <span class="text-subtitle1 q-ml-sm"> ATCP</span>
+            </div>
+            <div>
+              <span class="text-subtitle1 text-bold text-grey-9">
+                Decimals :
+              </span>
+              <span class="text-subtitle1 q-ml-sm"> 18</span>
+            </div>
+            <div>
+              <span class="text-subtitle1 text-bold text-grey-9">
+                Total Supply :
+              </span>
+              <span class="text-subtitle1 q-ml-sm"> 1,000,000</span>
+            </div>
+
+            <q-separator class="q-mt-lg" size="2px" color="teal" inset="" />
+
+            <div class="row q-mt-lg">
+              <div class="col-12 col-md-12">
+                <span class="text-bold text-grey-9 text-subtitle1">
+                  TRANSFER TOKEN</span
+                >
+              </div>
+              <div class="col-12 col-md-4">
+                <q-input
+                  label="Transfer To (address)"
+                  outlined
+                  dense
+                  placeholder="Input Wallet Address 0x000"
+                  v-model="transferToAddress"
+                >
+                </q-input>
+              </div>
+              <div class="col-12 col-md-3 q-mb-md">
+                <q-input
+                  label="Amount"
+                  class="q-ml-sm"
+                  outlined
+                  dense
+                  placeholder="0"
+                  v-model="transferToAmount"
+                >
+                </q-input>
+              </div>
+              <div class="col-12 col-md-1 q-ml-sm">
+                <q-btn
+                  @click="transferTo"
+                  color="secondary"
+                  glossy
+                  label="Send"
+                />
+              </div>
+            </div>
           </q-card-section>
         </q-card>
       </q-slide-transition>
     </div>
 
-    <div class="q-pl-md q-pr-md">
-      <q-slide-transition appear>
-        <q-card v-if="showWrite">
-          <q-card-section>
-            <span> Buy</span>
-          </q-card-section>
-        </q-card>
-      </q-slide-transition>
+    <div class="q-mt-xl flex flex-center">
+      <div>
+        <span class="text-h2 text-bold text-grey-9">BUY NOW!</span>
+      </div>
+    </div>
+    <div class="flex flex-center">
+      <q-btn color="warning text-black text-bold text-h6">BUY</q-btn>
+    </div>
+    <div class="flex flex-center q-mt-md">
+      <div class="col-12 col-md-4">
+        <q-input
+          label="Input eth amount"
+          outlined
+          dense
+          placeholder="value"
+          v-model="buyToken"
+        >
+        </q-input>
+      </div>
     </div>
 
     <q-page-container>
@@ -137,13 +219,17 @@ export default defineComponent({
   data() {
     return {
       url: require("app/src/assets/acnlogo.png"),
+      avatar: require("app/src/assets/boy-avatar.png"),
       loading: false,
       isConnected: false,
-      showRead: false,
-      showWrite: false,
+      showTokenInfo: false,
       currentAccount: "",
       ethBalance: "",
+      tokenBalance: "",
       loginTime: "",
+      buyToken: "",
+      transferToAddress: "",
+      transferToAmount: "",
     };
   },
 
@@ -156,12 +242,6 @@ export default defineComponent({
   methods: {
     showTransactionConfirmed() {
       this.$q.notify({
-        // actions: [
-        //   {
-        //     label: "Login Successful. Welcome! ",
-        //     color: "white",
-        //   },
-        // ],
         message: "Login Successful. Welcome!",
         type: "positive",
         position: "top-right",
@@ -222,6 +302,8 @@ export default defineComponent({
         console.log("Connect Wallet to continue");
       }
     },
+
+    async transferTo() {},
   },
 });
 </script>

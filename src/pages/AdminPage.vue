@@ -58,7 +58,7 @@
         <span class="text-body1">{{ currentAccount }}</span>
       </div>
       <div class="text-subtitle1">
-        <span class="q-ml-xl text-grey-9 text-bold">Eth Balance: </span>
+        <span class="q-ml-lg text-grey-9 text-bold">Wallet Eth Balance: </span>
         <span class="text-body1">{{ ethBalance }}</span>
       </div>
     </div>
@@ -68,7 +68,7 @@
         <span class="text-body1">Admin</span>
       </div>
       <div>
-        <span class="q-ml-xl text-subtitle1 text-grey-9 text-bold"
+        <span class="q-ml-lg text-subtitle1 text-grey-9 text-bold"
           >Login Time:
         </span>
         <span class="text-body1">{{ loginTime }}</span>
@@ -80,7 +80,7 @@
     <div class="q-mt-md q-pl-xl q-pr-xl">
       <q-toolbar class="full-width bg-yellow-10">
         <q-toolbar-title class="text-white text-h6">
-          TOKEN INFORMATIONS
+          ATCP TOKEN INFORMATIONS
         </q-toolbar-title>
 
         <q-separator vertical size="2px" />
@@ -102,30 +102,34 @@
         <q-card v-if="showTokenInfo">
           <q-card-section>
             <div>
-              <span class="text-subtitle1 text-bold text-grey-9"> Name: </span>
+              <span class="text-subtitle1 text-bold text-grey-9"> Name : </span>
               <span class="text-subtitle1 q-ml-sm">
                 Accentue Blockchain Token</span
               >
               <span class="q-ml-xl text-subtitle1 text-bold text-grey-9">
-                Minimum USD:
+                Minimum Funding Amount :
               </span>
-              <span class="text-subtitle1 q-ml-sm"> 50</span>
+              <span class="text-subtitle1 q-ml-sm"> 50 usd</span>
+              <span class="text-subtitle1 text-bold text-grey-9 q-ml-xl">
+                Total Funds Accumulated :
+              </span>
+              <span class="text-subtitle1 q-ml-sm"> {{}}</span>
             </div>
             <div>
               <span class="text-subtitle1 text-bold text-grey-9">
-                Symbol:
+                Symbol :
               </span>
               <span class="text-subtitle1 q-ml-sm"> ATCP</span>
             </div>
             <div>
               <span class="text-subtitle1 text-bold text-grey-9">
-                Decimals:
+                Decimals :
               </span>
               <span class="text-subtitle1 q-ml-sm"> 18</span>
             </div>
             <div>
               <span class="text-subtitle1 text-bold text-grey-9">
-                Total Supply:
+                Total Supply :
               </span>
               <span class="text-subtitle1 q-ml-sm"> 1,000,000</span>
             </div>
@@ -198,7 +202,7 @@
                   GET CONVERSION RATE (ETH/USD)</span
                 >
               </div>
-              <div class="col-12 col-md-5">
+              <div class="col-12 col-md-3">
                 <q-input
                   label="Input eth amount"
                   outlined
@@ -232,7 +236,7 @@
                   BUYERS</span
                 >
               </div>
-              <div class="col-12 col-md-5">
+              <div class="col-12 col-md-3">
                 <q-input
                   label="Input index"
                   outlined
@@ -279,7 +283,7 @@
             <div class="row q-ml-sm">
               <div class="col-12 col-md-12">
                 <span class="text-bold text-grey-9 text-subtitle1">
-                  TimeLock</span
+                  TIMELOCK</span
                 >
               </div>
               <div class="col-12 col-md-2">
@@ -429,12 +433,21 @@
         <q-card v-if="showMultiSigRead">
           <q-card-section>
             <div class="row q-ml-sm">
+              <div class="col-12 col-md-11 q-mb-sm">
+                <span class="text-bold text-grey-8 text-subtitle1">
+                  Note:
+                </span>
+                <span class="text-grey-9 text-subtitle2">
+                  At least 2 confirmations is required in order to proceed to
+                  execution.
+                </span>
+              </div>
               <div class="col-12 col-md-12">
                 <span class="text-bold text-grey-9 text-subtitle1">
                   GET TRANSACTION</span
                 >
               </div>
-              <div class="col-12 col-md-5">
+              <div class="col-12 col-md-3">
                 <q-input
                   label="Input index"
                   outlined
@@ -452,25 +465,84 @@
                   label="QUERY"
                 />
               </div>
+              <div v-if="this.transactionInfo.receiver">
+                <div
+                  class="col-12 col-md-4 text-subtitle1 text-bold text-grey-9"
+                >
+                  <span> Receiver : {{ transactionInfo.receiver }} </span>
+                </div>
+                <div
+                  class="col-12 col-md-3 text-subtitle1 text-bold text-grey-9"
+                >
+                  <span> Amount : {{ transactionInfo.amount }} eth</span>
+                </div>
+                <div class="col-12 col-md-4"></div>
+                <div
+                  class="col-12 col-md-4 text-subtitle1 text-bold text-grey-9"
+                >
+                  <span> Executed : {{ transactionInfo.executed }}</span>
+                </div>
+                <div
+                  class="col-12 col-md-1 text-subtitle1 text-bold text-grey-9"
+                >
+                  <span
+                    >Confirmations : {{ transactionInfo.confirmations }}</span
+                  >
+                </div>
+              </div>
             </div>
 
-            <div class="row q-ml-sm q-mt-sm">
-              <div class="col-12 col-md-12">
-                <span class="text-bold text-grey-9 text-subtitle1"> BURN</span>
-              </div>
-              <div class="col-12 col-md-5">
-                <q-input
-                  label="value"
-                  outlined
-                  dense
-                  placeholder="amount"
-                  v-model="functions.burn"
-                >
-                </q-input>
-              </div>
-              <div class="col-12 col-md-1 q-ml-sm">
-                <q-btn @click="burn" color="secondary" glossy label="burn" />
-              </div>
+            <q-separator class="q-mt-md" size="2px" color="teal" inset="" />
+            <div class="q-mt-xl q-mb-xl flex flex-center">
+              <q-table
+                card-container-class="text-h5"
+                :rows="rows"
+                :columns="columns"
+                separator="cell"
+                title="Transactions"
+                row-key="id"
+                :visible-columns="['id', 'name', 'email', 'confirm', 'execute']"
+                :loading="this.loading"
+                :pagination="{ sortBy: 'id', rowsPerPage: 5, page: 1 }"
+                :rows-per-page-options="[5, 10, 15, 20, 0]"
+              >
+                <!-- v-model:selected="selected"
+                selection="single" -->
+                <template v-slot:top>
+                  <div class="col-2 q-table__title text-h5">Transactions</div>
+                  <q-space />
+                  <q-btn no-caps class="" color="primary"
+                    >Submit Transaction</q-btn
+                  >
+                </template>
+                <template #body="props">
+                  <q-tr :props="props">
+                    <!-- <pre>{{ props }}</pre> -->
+                    <q-td key="id" :props="props">{{ props.row.id }}</q-td>
+                    <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+                    <q-td key="email" :props="props">{{
+                      props.row.email
+                    }}</q-td>
+                    <q-td key="confirm" :props="props">
+                      <q-btn
+                        color="amber"
+                        class="text-black"
+                        no-caps
+                        @click="confirmTransaction(props.row)"
+                        >Confirm</q-btn
+                      >
+                    </q-td>
+                    <q-td key="execute" :props="props">
+                      <q-btn
+                        color="green"
+                        no-caps
+                        @click="executeTransaction(props.row)"
+                        >Execute</q-btn
+                      >
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
             </div>
           </q-card-section>
         </q-card>
@@ -483,39 +555,89 @@
           <q-card-section>
             <div class="row q-ml-sm">
               <div class="col-12 col-md-12">
-                <span class="text-bold text-grey-9 text-subtitle1"> MINT</span>
+                <span class="text-bold text-grey-9 text-subtitle1">
+                  SUBMIT TRANSACTION</span
+                >
               </div>
-              <div class="col-12 col-md-5">
+              <div class="col-12 col-md-3">
                 <q-input
-                  label="value"
+                  label="Receiver Address"
                   outlined
                   dense
-                  placeholder="amount"
-                  v-model="functions.mint"
+                  placeholder="address"
+                  v-model="functions.submitTransactionTo"
+                >
+                </q-input>
+              </div>
+              <div class="col-12 col-md-2 q-ml-sm">
+                <q-input
+                  label="Eth Amount"
+                  outlined
+                  dense
+                  placeholder="value"
+                  v-model="functions.submitTransactionAmount"
                 >
                 </q-input>
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
-                <q-btn @click="mint" color="secondary" glossy label="MINT" />
+                <q-btn
+                  @click="submitTransaction"
+                  color="secondary"
+                  glossy
+                  label="SUBMIT"
+                />
               </div>
             </div>
 
             <div class="row q-ml-sm q-mt-sm">
               <div class="col-12 col-md-12">
-                <span class="text-bold text-grey-9 text-subtitle1"> BURN</span>
+                <span class="text-bold text-grey-9 text-subtitle1">
+                  CONFIRM TRANSACTION</span
+                >
               </div>
-              <div class="col-12 col-md-5">
+              <div class="col-12 col-md-2">
                 <q-input
-                  label="value"
+                  label="Input index"
                   outlined
                   dense
-                  placeholder="amount"
-                  v-model="functions.burn"
+                  placeholder="index"
+                  v-model="functions.confirmTransactionIndex"
                 >
                 </q-input>
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
-                <q-btn @click="burn" color="secondary" glossy label="burn" />
+                <q-btn
+                  @click="confirmTransactionIndex"
+                  color="secondary"
+                  glossy
+                  label="CONFRIM"
+                />
+              </div>
+            </div>
+
+            <div class="row q-ml-sm q-mt-sm">
+              <div class="col-12 col-md-12">
+                <span class="text-bold text-grey-9 text-subtitle1">
+                  EXECUTE TRANSACTION</span
+                >
+              </div>
+              <div class="col-12 col-md-2">
+                <q-input
+                  label="Input index"
+                  outlined
+                  dense
+                  placeholder="index"
+                  v-model="functions.executeTransactionIndex"
+                >
+                </q-input>
+              </div>
+              <div class="col-12 col-md-1 q-ml-sm">
+                <q-btn
+                  @click="executeTransactionIndex"
+                  color="secondary"
+                  glossy
+                  label="EXECUTE"
+                />
               </div>
             </div>
           </q-card-section>
@@ -530,10 +652,19 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
 import { api } from "boot/axios";
+import { defineComponent, ref } from "vue";
+import Web3 from "web3";
+import icoAbi from "./icoABI.json";
 
 const provider = window.ethereum;
+const web3 = new Web3(provider);
+const icoContractAbi = icoAbi.abi;
+
+const icoContract = new web3.eth.Contract(
+  icoContractAbi,
+  process.env.CONTRACT_ADDRESS
+);
 
 export default defineComponent({
   name: "MainLayout",
@@ -549,7 +680,7 @@ export default defineComponent({
       showTokenContract: false,
       showRead: false,
       showTimeLock: false,
-      showMultiSigRead: false,
+      showMultiSigRead: true,
       showMultiSigWrite: false,
       currentAccount: "",
       ethBalance: "",
@@ -563,6 +694,10 @@ export default defineComponent({
         timeLock: "",
         getTimeLeft: "",
         getTransaction: "",
+        submitTransactionTo: "",
+        submitTransactionAmount: "",
+        confirmTransactionIndex: "",
+        executeTransactionIndex: "",
       },
       tokenInfo: {
         conversionRate: "",
@@ -571,8 +706,93 @@ export default defineComponent({
         mint: "",
         burn: "",
         getTimeLeft: "",
-        transactionInfo: "",
       },
+      transactionInfo: {
+        receiver: "",
+        amount: "",
+        executed: "",
+        confirmations: "",
+      },
+      selected: [],
+      rows: [
+        {
+          id: 1,
+          name: "Luke Diebold",
+          email: "Luke@gmail.com",
+        },
+        {
+          id: 2,
+          name: "Panda",
+          email: "panda@gmail.com",
+        },
+        {
+          id: 3,
+          name: "Lily",
+          email: "lily@gmail.com",
+        },
+        {
+          id: 4,
+          name: "Shan",
+          email: "shan@gmail.com",
+        },
+      ],
+      columns: [
+        {
+          name: "id",
+          label: "ID",
+          field: "id",
+          align: "left",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 100px",
+        },
+        {
+          name: "name",
+          label: "Name",
+          field: "name",
+          align: "left",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 150px",
+        },
+        {
+          name: "email",
+          label: "Email",
+          field: "email",
+          align: "left",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 150px",
+        },
+        {
+          name: "confirm",
+          label: "Confirm",
+          field: "confirm",
+          align: "center",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 200px",
+        },
+        {
+          name: "execute",
+          label: "Execute",
+          field: "execute",
+          align: "center",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 200px",
+        },
+      ],
     };
   },
 
@@ -602,7 +822,7 @@ export default defineComponent({
 
     async getLoginTime() {
       this.loading = true;
-      const date = new Date().toLocaleString();
+      const date = await new Date().toLocaleString();
       this.loginTime = date;
       console.log(this.loginTime);
 
@@ -665,6 +885,27 @@ export default defineComponent({
     async timeLock() {},
 
     async getTimeLeft() {},
+
+    async getTransaction() {
+      const res = await icoContract.methods
+        .getTransaction(this.functions.getTransaction)
+        .call();
+      this.transactionInfo.receiver = res.to;
+      const read = parseInt(res.value) / 10 ** 18;
+      this.transactionInfo.amount = read.toFixed(4);
+      this.transactionInfo.executed = res.executed;
+      this.transactionInfo.confirmations = res.numConfirmations;
+    },
+
+    async submitTransaction() {},
+
+    async confirmTransactionIndex() {},
+
+    async executeTransactionIndex() {},
+
+    async submitTest(data) {
+      console.log("DATA", data.name);
+    },
   },
 });
 </script>

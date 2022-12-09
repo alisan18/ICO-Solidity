@@ -23,7 +23,7 @@
                 WELCOME!
               </div>
               <div class="text-white q-my-sm text-subtitle1">
-                The Most awaited blockchain Dapp is here!
+                The most awaited blockchain Dapp is here!
               </div>
               <div class="text-white q-my-xl text-subtitle1">
                 <router-link class="text-white" to="/"> Go Back </router-link>
