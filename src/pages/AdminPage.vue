@@ -495,13 +495,18 @@
             <q-separator class="q-mt-md" size="2px" color="teal" inset="" />
             <div class="q-mt-xl q-mb-xl flex flex-center">
               <q-table
-                card-container-class="text-h5"
                 :rows="rows"
                 :columns="columns"
                 separator="cell"
                 title="Transactions"
                 row-key="id"
-                :visible-columns="['id', 'name', 'email', 'confirm', 'execute']"
+                :visible-columns="[
+                  'to',
+                  'value',
+                  'executed',
+                  'confirm',
+                  'execute',
+                ]"
                 :loading="this.loading"
                 :pagination="{ sortBy: 'id', rowsPerPage: 5, page: 1 }"
                 :rows-per-page-options="[5, 10, 15, 20, 0]"
@@ -511,17 +516,20 @@
                 <template v-slot:top>
                   <div class="col-2 q-table__title text-h5">Transactions</div>
                   <q-space />
-                  <q-btn no-caps class="" color="primary"
-                    >Submit Transaction</q-btn
+                  <q-btn no-caps class="text-bold" color="teal-8"
+                    >Create Transaction</q-btn
                   >
                 </template>
                 <template #body="props">
                   <q-tr :props="props">
                     <!-- <pre>{{ props }}</pre> -->
-                    <q-td key="id" :props="props">{{ props.row.id }}</q-td>
-                    <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-                    <q-td key="email" :props="props">{{
-                      props.row.email
+                    <!-- <q-td key="id" :props="props">{{ props.row.index }}</q-td> -->
+                    <q-td key="to" :props="props">{{ props.row.to }}</q-td>
+                    <q-td key="value" :props="props">{{
+                      props.row.value
+                    }}</q-td>
+                    <q-td key="executed" :props="props">{{
+                      props.row.executed
                     }}</q-td>
                     <q-td key="confirm" :props="props">
                       <q-btn
@@ -714,44 +722,23 @@ export default defineComponent({
         confirmations: "",
       },
       selected: [],
-      rows: [
-        {
-          id: 1,
-          name: "Luke Diebold",
-          email: "Luke@gmail.com",
-        },
-        {
-          id: 2,
-          name: "Panda",
-          email: "panda@gmail.com",
-        },
-        {
-          id: 3,
-          name: "Lily",
-          email: "lily@gmail.com",
-        },
-        {
-          id: 4,
-          name: "Shan",
-          email: "shan@gmail.com",
-        },
-      ],
+      rows: [],
       columns: [
+        // {
+        //   name: "index",
+        //   label: "Index",
+        //   field: "index",
+        //   align: "left",
+        //   sortable: true,
+        //   // style: "border-bottom: 1px solid green",
+        //   headerClasses: "bg-teal-5 text-white",
+        //   headerStyle: "font-size: 1.2em",
+        //   style: "width: 100px",
+        // },
         {
-          name: "id",
-          label: "ID",
-          field: "id",
-          align: "left",
-          sortable: true,
-          // style: "border-bottom: 1px solid green",
-          headerClasses: "bg-teal-5 text-white",
-          headerStyle: "font-size: 1.2em",
-          style: "width: 100px",
-        },
-        {
-          name: "name",
-          label: "Name",
-          field: "name",
+          name: "to",
+          label: "Receiver",
+          field: "to",
           align: "left",
           sortable: true,
           // style: "border-bottom: 1px solid green",
@@ -760,9 +747,20 @@ export default defineComponent({
           style: "width: 150px",
         },
         {
-          name: "email",
-          label: "Email",
-          field: "email",
+          name: "value",
+          label: "Amount",
+          field: "value",
+          align: "left",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 150px",
+        },
+        {
+          name: "executed",
+          label: "Executed",
+          field: "executed",
           align: "left",
           sortable: true,
           // style: "border-bottom: 1px solid green",
@@ -799,6 +797,7 @@ export default defineComponent({
   async created() {
     await this.checkConnection();
     await this.getLoginTime();
+    await this.getAllTransactions();
     // this.showTransactionConfirmed();
   },
 
@@ -890,11 +889,19 @@ export default defineComponent({
       const res = await icoContract.methods
         .getTransaction(this.functions.getTransaction)
         .call();
+      this.data = res;
+      console.log("DATA", this.data);
       this.transactionInfo.receiver = res.to;
       const read = parseInt(res.value) / 10 ** 18;
       this.transactionInfo.amount = read.toFixed(4);
       this.transactionInfo.executed = res.executed;
       this.transactionInfo.confirmations = res.numConfirmations;
+    },
+
+    async getAllTransactions() {
+      const res = await icoContract.methods.getAllTransactions().call();
+      this.rows = res;
+      console.log("DATA", this.rows);
     },
 
     async submitTransaction() {},
