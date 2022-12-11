@@ -170,6 +170,7 @@ export default defineComponent({
     return {
       dialog1: false,
       loading: false,
+      isAdmin: false,
       user: {
         username: "",
         password: "",
@@ -198,9 +199,12 @@ export default defineComponent({
       if (
         this.currentAccount === "0x07465a0cde39d1fa5622d69055545435a99eaca0"
       ) {
+        this.isAdmin = true;
+        console.log(this.isAdmin);
         this.$router.push({ path: "/admin" });
       } else {
         this.$router.push({ path: "/user" });
+        console.log("IsADMIN", this.isAdmin);
       }
     },
   },

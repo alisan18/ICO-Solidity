@@ -1,7 +1,7 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" class="bg-image">
     <q-header elevated>
-      <q-toolbar class="bg-teal-9">
+      <q-toolbar style="background-color: #032b21cc">
         <q-toolbar-title class="text-weight-bolder text-white">
           <div class="row">
             <div class="col-md-5">
@@ -48,41 +48,42 @@
       <span>.</span>
     </div>
     <div
-      class="underline text-h2 q-ml-md text-grey-9 flex flex-center text-bold"
+      class="underline text-h2 q-ml-md text-white flex flex-center text-bold"
     >
       <span>Welcome!</span>
     </div>
     <div class="q-mt-xl text-center flex flex-center">
       <div class="text-subtitle1">
-        <span class="text-grey-9 text-bold">Wallet Address: </span>
-        <span class="text-body1">{{ currentAccount }}</span>
+        <span class="text-white text-bold">Wallet Address: </span>
+        <span class="text-body1 text-white">{{ currentAccount }}</span>
       </div>
       <div class="text-subtitle1">
-        <span class="q-ml-xl text-grey-9 text-bold">Wallet Eth balance: </span>
-        <span class="text-body1">{{ ethBalance }}</span>
+        <span class="q-ml-xl text-white text-bold">Wallet Eth balance: </span>
+        <span class="text-body1 text-white">{{ ethBalance }}</span>
       </div>
       <div class="text-subtitle1">
-        <span class="q-ml-xl text-grey-9 text-bold">Token Balance: </span>
-        <span class="text-body1">450000000000</span>
+        <span class="q-ml-xl text-white text-bold">Token Balance: </span>
+        <span v-if="!tokenBalance" class="text-body1 text-white">0</span>
+        <span class="text-body1 text-white">{{ tokenBalance }}</span>
       </div>
     </div>
     <div class="text-center flex flex-center">
       <div>
-        <span class="text-subtitle1 text-grey-9 text-bold">Account Type: </span>
-        <span class="text-body1">User</span>
+        <span class="text-subtitle1 text-white text-bold">Account Type: </span>
+        <span class="text-body1 text-white">User</span>
       </div>
       <div>
-        <span class="q-ml-xl text-subtitle1 text-grey-9 text-bold"
+        <span class="q-ml-xl text-subtitle1 text-white text-bold"
           >Login Time:
         </span>
-        <span class="text-body1">{{ loginTime }}</span>
+        <span class="text-body1 text-white">{{ loginTime }}</span>
       </div>
     </div>
 
     <q-separator class="q-mt-md" size="2px" color="teal" inset="" />
 
     <div class="q-mt-xl q-pl-xl q-pr-xl">
-      <q-toolbar class="full-width bg-teal">
+      <q-toolbar class="full-width bg-yellow-10">
         <q-toolbar-title class="text-white text-h6">
           ATCP TOKEN INFORMATIONS
         </q-toolbar-title>
@@ -133,7 +134,7 @@
               <span class="text-subtitle1 text-bold text-grey-9">
                 Total Supply :
               </span>
-              <span class="text-subtitle1 q-ml-sm"> 1,000,000</span>
+              <span class="text-subtitle1 q-ml-sm">{{ totalSupply }}</span>
             </div>
 
             <q-separator class="q-mt-lg" size="2px" color="teal" inset="" />
@@ -144,7 +145,7 @@
                   TRANSFER TOKEN</span
                 >
               </div>
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-3">
                 <q-input
                   label="Transfer To (address)"
                   outlined
@@ -154,7 +155,7 @@
                 >
                 </q-input>
               </div>
-              <div class="col-12 col-md-3 q-mb-md">
+              <div class="col-12 col-md-2 q-mb-md">
                 <q-input
                   label="Amount"
                   class="q-ml-sm"
@@ -167,7 +168,7 @@
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
-                  @click="transferTo"
+                  @click="transferToken"
                   color="secondary"
                   glossy
                   label="Send"
@@ -181,24 +182,115 @@
 
     <div class="q-mt-xl flex flex-center">
       <div>
-        <span class="text-h2 text-bold text-grey-9">BUY NOW!</span>
+        <span class="text-h1 text-bold text-white">BUY NOW!</span>
       </div>
     </div>
     <div class="flex flex-center">
-      <q-btn color="warning text-black text-bold text-h6">BUY</q-btn>
+      <q-btn color="warning text-black text-bold text-h5" @click="buyToken"
+        >BUY</q-btn
+      >
     </div>
-    <div class="flex flex-center q-mt-md">
-      <div class="col-12 col-md-4">
+    <div class="row flex flex-center q-mt-md">
+      <div class="col-12 col-md-2 bg-white">
         <q-input
           label="Input eth amount"
           outlined
           dense
-          placeholder="value"
-          v-model="buyToken"
+          placeholder="amount"
+          v-model="inputbuyToken"
         >
         </q-input>
       </div>
     </div>
+    <div class="q-mt-lg flex flex-center">
+      <div>
+        <span class="text-subtitle1 text-bold text-white">
+          <strong>Note</strong>
+          Minimum buy amount is 50 usd. Check ETH to USD price
+        </span>
+        <q-btn
+          @click="dialogPrice = true"
+          flat
+          dense
+          class="text-subtitle1 text-white text-bold"
+          label="here"
+        ></q-btn>
+      </div>
+    </div>
+
+    <q-dialog
+      v-model="dialogPrice"
+      persistent
+      transition-show="flip-down"
+      transition-hide="flip-up"
+    >
+      <q-card class="text-white text-bold" style="width: 500px">
+        <q-toolbar class="bg-yellow-10">
+          <q-icon name="request_quote" size="45px" />
+          <div>
+            <span class="text-h5 text-bold"> ETH/USD </span>
+          </div>
+
+          <q-space />
+
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+          </q-btn>
+        </q-toolbar>
+
+        <q-card-section>
+          <div>
+            <span class="text-dark text-h6 q-ml-sm">Get Price</span>
+          </div>
+          <div class="row q-ml-sm q-mb-sm q-mt-sm">
+            <div class="col-12 col-md-3">
+              <q-btn color="yellow-10" glossy label="Check" @click="getPrice" />
+            </div>
+            <div v-if="price">
+              <span class="text-h6 text-bold text-dark"> Price : </span>
+              <span class="text-h6 text-bold text-green q-ml-sm">
+                ${{ price }}</span
+              >
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section>
+          <div>
+            <span class="text-dark text-h6 q-ml-sm">Conversion Rate</span>
+          </div>
+          <div class="row q-ml-sm q-mb-sm q-mt-sm">
+            <div class="col-12 col-md-2">
+              <q-btn
+                color="yellow-10"
+                glossy
+                label="Check"
+                @click="getConversionRate"
+              />
+            </div>
+            <div class="col-12 col-md-5 q-ml-sm">
+              <q-input
+                v-model="inpuConversionRate"
+                label="Input eth amount"
+                outlined
+                dense
+                placeholder="amount"
+              />
+            </div>
+            <div v-if="conversionRate" class="q-ml-md">
+              <span class="text-subtitle1 text-bold text-dark q-mt-sm">
+                Rate :
+              </span>
+              <span class="text-h6 text-bold text-green q-ml-sm q-mt-sm">
+                ${{ conversionRate }}</span
+              >
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <q-page-container>
       <router-view />
@@ -207,10 +299,19 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
 import { api } from "boot/axios";
+import { defineComponent, ref } from "vue";
+import Web3 from "web3";
+import icoAbi from "./icoABI.json";
 
 const provider = window.ethereum;
+const web3 = new Web3(provider);
+const icoContractAbi = icoAbi.abi;
+
+const icoContract = new web3.eth.Contract(
+  icoContractAbi,
+  process.env.CONTRACT_ADDRESS
+);
 
 export default defineComponent({
   name: "MainLayout",
@@ -223,11 +324,16 @@ export default defineComponent({
       loading: false,
       isConnected: false,
       showTokenInfo: false,
+      dialogPrice: false,
       currentAccount: "",
       ethBalance: "",
       tokenBalance: "",
       loginTime: "",
-      buyToken: "",
+      totalSupply: "",
+      price: "",
+      inpuConversionRate: "",
+      conversionRate: "",
+      inputbuyToken: "",
       transferToAddress: "",
       transferToAmount: "",
     };
@@ -236,11 +342,13 @@ export default defineComponent({
   async created() {
     await this.checkConnection();
     await this.getLoginTime();
-    this.showTransactionConfirmed();
+    await this.getTotalSupply();
+    await this.getBalanceOf();
+    // this.showLoginSuccessful();
   },
 
   methods: {
-    showTransactionConfirmed() {
+    showLoginSuccessful() {
       this.$q.notify({
         message: "Login Successful. Welcome!",
         type: "positive",
@@ -303,7 +411,72 @@ export default defineComponent({
       }
     },
 
-    async transferTo() {},
+    async getTotalSupply() {
+      try {
+        const res = await icoContract.methods.totalSupply().call();
+        const read = parseInt(res) / 10 ** 18;
+        this.totalSupply = read.toFixed(0);
+        console.log(res);
+      } catch (error) {
+        console.log("ERROR", error);
+      }
+    },
+
+    async getBalanceOf() {
+      try {
+        const res = await icoContract.methods
+          .balanceOf(this.currentAccount)
+          .call();
+        const read = parseInt(res) / 10 ** 18;
+        this.tokenBalance = read.toFixed(0);
+        console.log(res);
+      } catch (error) {
+        console.log("ERROR", error);
+      }
+    },
+
+    async getPrice() {
+      try {
+        const res = await icoContract.methods.getPrice().call();
+        const read = parseInt(res) / 10 ** 18;
+        this.price = read.toFixed(2);
+        console.log(res);
+      } catch (error) {
+        console.log("ERROR", error);
+      }
+    },
+
+    async getConversionRate() {
+      try {
+        const res = await icoContract.methods
+          .getConversionRate(this.inpuConversionRate)
+          .call();
+        const read = parseInt(res) / 10 ** 18;
+        this.conversionRate = read.toFixed(2);
+        console.log(res);
+      } catch (error) {
+        console.log("ERROR", error);
+      }
+    },
+
+    async buyToken() {
+      try {
+        const res = await icoContract.methods
+          .buy()
+          .send({ from: this.currentAccount });
+        console.log(res);
+        this.getBalanceOf();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async transferToken() {
+      try {
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 });
 </script>
@@ -313,5 +486,10 @@ export default defineComponent({
   text-decoration: underline;
   text-decoration-color: goldenrod;
   text-decoration-thickness: 0.2rem;
+}
+.bg-image {
+  background-image: url(app/src/assets/buy1.jpg);
+  background-repeat: no-repeat;
+  background-size: auto;
 }
 </style>
