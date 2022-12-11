@@ -180,10 +180,10 @@
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
-                  @click="getPrice"
                   color="secondary"
                   glossy
                   label="Query"
+                  @click="getPrice"
                 />
               </div>
               <div class="col-12 col-md-4">
@@ -204,20 +204,19 @@
               </div>
               <div class="col-12 col-md-3">
                 <q-input
+                  v-model="functions.conversionRate"
                   label="Input eth amount"
                   outlined
                   dense
                   placeholder="amount"
-                  v-model="functions.conversionRate"
-                >
-                </q-input>
+                />
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
-                  @click="getConversionRate"
                   color="secondary"
                   glossy
                   label="Query"
+                  @click="getConversionRate"
                 />
               </div>
               <div class="col-12 col-md-4">
@@ -238,20 +237,19 @@
               </div>
               <div class="col-12 col-md-3">
                 <q-input
+                  v-model="functions.buyersList"
                   label="Input index"
                   outlined
                   dense
                   placeholder="index number"
-                  v-model="functions.buyersList"
-                >
-                </q-input>
+                />
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
-                  @click="getBuyersList"
                   color="secondary"
                   glossy
                   label="Query"
+                  @click="getBuyersList"
                 />
               </div>
               <div class="col-12 col-md-3">
@@ -288,20 +286,19 @@
               </div>
               <div class="col-12 col-md-2">
                 <q-input
+                  v-model="functions.timeLock"
                   label="value"
                   outlined
                   dense
                   placeholder="amount"
-                  v-model="functions.timeLock"
-                >
-                </q-input>
+                />
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
-                  @click="timeLock"
                   color="secondary"
                   glossy
                   label="LOCK"
+                  @click="timeLock"
                 />
               </div>
             </div>
@@ -314,10 +311,10 @@
               </div>
               <div class="col-12 col-md-1 q-ml-sm q-mt-sm">
                 <q-btn
-                  @click="getTimeLeft"
                   color="secondary"
                   glossy
                   label="Query"
+                  @click="getTimeLeft"
                 />
               </div>
               <div class="col-12 col-md-4 q-mt-sm">
@@ -363,16 +360,15 @@
               </div>
               <div class="col-12 col-md-5">
                 <q-input
+                  v-model="functions.mint"
                   label="value"
                   outlined
                   dense
                   placeholder="amount"
-                  v-model="functions.mint"
-                >
-                </q-input>
+                />
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
-                <q-btn @click="mint" color="secondary" glossy label="MINT" />
+                <q-btn color="secondary" glossy label="MINT" @click="mint" />
               </div>
             </div>
 
@@ -382,16 +378,15 @@
               </div>
               <div class="col-12 col-md-5">
                 <q-input
+                  v-model="functions.burn"
                   label="value"
                   outlined
                   dense
                   placeholder="amount"
-                  v-model="functions.burn"
-                >
-                </q-input>
+                />
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
-                <q-btn @click="burn" color="secondary" glossy label="burn" />
+                <q-btn color="secondary" glossy label="burn" @click="burn" />
               </div>
             </div>
           </q-card-section>
@@ -442,7 +437,7 @@
                   execution.
                 </span>
               </div>
-              <div class="col-12 col-md-12">
+              <!-- <div class="col-12 col-md-12">
                 <span class="text-bold text-grey-9 text-subtitle1">
                   GET TRANSACTION</span
                 >
@@ -489,64 +484,77 @@
                     >Confirmations : {{ transactionInfo.confirmations }}</span
                   >
                 </div>
-              </div>
+              </div> -->
             </div>
 
-            <q-separator class="q-mt-md" size="2px" color="teal" inset="" />
-            <div class="q-mt-xl q-mb-xl flex flex-center">
+            <!-- <q-separator class="q-mt-md" size="2px" color="teal" inset="" /> -->
+            <div class="q-mt-md q-mb-xl flex flex-center">
               <q-table
                 :rows="rows"
                 :columns="columns"
                 separator="cell"
                 title="Transactions"
-                row-key="id"
+                row-key="to"
                 :visible-columns="[
                   'to',
                   'value',
+                  'numConfirmations',
                   'executed',
                   'confirm',
                   'execute',
                 ]"
-                :loading="this.loading"
+                :loading="loading"
                 :pagination="{ sortBy: 'id', rowsPerPage: 5, page: 1 }"
                 :rows-per-page-options="[5, 10, 15, 20, 0]"
               >
-                <!-- v-model:selected="selected"
-                selection="single" -->
-                <template v-slot:top>
+                <template #top>
                   <div class="col-2 q-table__title text-h5">Transactions</div>
                   <q-space />
-                  <q-btn no-caps class="text-bold" color="teal-8"
-                    >Create Transaction</q-btn
+                  <q-btn
+                    no-caps
+                    class="text-bold"
+                    color="primary"
+                    @click="dialogSubmit = true"
                   >
+                    Create Transaction
+                  </q-btn>
                 </template>
                 <template #body="props">
                   <q-tr :props="props">
                     <!-- <pre>{{ props }}</pre> -->
-                    <!-- <q-td key="id" :props="props">{{ props.row.index }}</q-td> -->
-                    <q-td key="to" :props="props">{{ props.row.to }}</q-td>
-                    <q-td key="value" :props="props">{{
-                      props.row.value
-                    }}</q-td>
-                    <q-td key="executed" :props="props">{{
-                      props.row.executed
-                    }}</q-td>
+                    <q-td key="index" :props="props">
+                      {{ props.row.index }}
+                    </q-td>
+                    <q-td key="to" :props="props">
+                      {{ props.row.to }}
+                    </q-td>
+                    <q-td key="value" :props="props">
+                      {{ (props.row.value / 10 ** 18).toFixed(4) }}
+                    </q-td>
+                    <q-td key="numConfirmations" :props="props">
+                      {{ props.row.numConfirmations }}/2
+                    </q-td>
+                    <q-td key="executed" :props="props">
+                      {{ props.row.executed }}
+                    </q-td>
                     <q-td key="confirm" :props="props">
                       <q-btn
                         color="amber"
                         class="text-black"
                         no-caps
                         @click="confirmTransaction(props.row)"
-                        >Confirm</q-btn
                       >
+                        Confirm
+                      </q-btn>
                     </q-td>
                     <q-td key="execute" :props="props">
                       <q-btn
                         color="green"
                         no-caps
                         @click="executeTransaction(props.row)"
-                        >Execute</q-btn
                       >
+                        Execute
+                      </q-btn>
                     </q-td>
                   </q-tr>
                 </template>
@@ -561,7 +569,7 @@
       <q-slide-transition appear>
         <q-card v-if="showMultiSigWrite">
           <q-card-section>
-            <div class="row q-ml-sm">
+            <!-- <div class="row q-ml-sm">
               <div class="col-12 col-md-12">
                 <span class="text-bold text-grey-9 text-subtitle1">
                   SUBMIT TRANSACTION</span
@@ -647,10 +655,89 @@
                   label="EXECUTE"
                 />
               </div>
-            </div>
+            </div> -->
           </q-card-section>
         </q-card>
       </q-slide-transition>
+    </div>
+
+    <div>
+      <q-dialog v-model="dialogSubmit" persistent>
+        <q-card style="width: 600px">
+          <q-toolbar class="bg-teal-5">
+            <q-avatar color="warning" icon="receipt_long" />
+
+            <q-toolbar-title class="text-white"
+              ><span class="text-weight-bold">Create</span>
+              Transaction</q-toolbar-title
+            >
+
+            <q-btn flat round dense icon="close" v-close-popup />
+          </q-toolbar>
+          <q-card-section>
+            <div class="row q-ml-md">
+              <div class="col-12 col-md-2 q-mt-sm">
+                <span class="text-grey-9 text-subtitle1 text-bold"
+                  >Receiver :
+                </span>
+              </div>
+              <div class="col-12 col-md-8">
+                <q-input
+                  label="Address"
+                  outlined
+                  dense
+                  placeholder="0x00"
+                  v-model="functions.submitTransactionTo"
+                >
+                </q-input>
+              </div>
+            </div>
+            <div class="row q-ml-md q-mt-md">
+              <div class="col-12 col-md-2 q-mt-sm">
+                <span class="text-grey-9 text-subtitle1 text-bold"
+                  >Amount :
+                </span>
+              </div>
+              <div class="col-12 col-md-8">
+                <q-input
+                  label="value"
+                  outlined
+                  dense
+                  placeholder="0"
+                  v-model="functions.submitTransactionAmount"
+                >
+                </q-input>
+              </div>
+            </div>
+          </q-card-section>
+
+          <q-separator class="q-mt-md" size="1px" color="teal" />
+
+          <q-card-section align="right">
+            <div class="q-mt-sm">
+              <q-btn
+                no-caps
+                label
+                flat
+                color="secondary"
+                class="text-bold"
+                @click="submitTransaction"
+                >Submit</q-btn
+              >
+              <q-btn
+                no-caps
+                flat
+                color="red"
+                class="text-bold q-ml-sm"
+                label="Cancel"
+                v-close-popup
+              />
+            </div>
+          </q-card-section>
+
+          <!-- <q-btn flat label="Close" v-close-popup /> -->
+        </q-card>
+      </q-dialog>
     </div>
 
     <q-page-container>
@@ -682,6 +769,7 @@ export default defineComponent({
     return {
       url: require("app/src/assets/acnlogo.png"),
       avatar: require("app/src/assets/boy-avatar.png"),
+      dialogSubmit: false,
       loading: false,
       isConnected: false,
       showTokenInfo: true,
@@ -704,8 +792,8 @@ export default defineComponent({
         getTransaction: "",
         submitTransactionTo: "",
         submitTransactionAmount: "",
-        confirmTransactionIndex: "",
-        executeTransactionIndex: "",
+        // confirmTransactionIndex: "",
+        // executeTransactionIndex: "",
       },
       tokenInfo: {
         conversionRate: "",
@@ -724,17 +812,17 @@ export default defineComponent({
       selected: [],
       rows: [],
       columns: [
-        // {
-        //   name: "index",
-        //   label: "Index",
-        //   field: "index",
-        //   align: "left",
-        //   sortable: true,
-        //   // style: "border-bottom: 1px solid green",
-        //   headerClasses: "bg-teal-5 text-white",
-        //   headerStyle: "font-size: 1.2em",
-        //   style: "width: 100px",
-        // },
+        {
+          name: "index",
+          label: "Index",
+          field: "index",
+          align: "left",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 150px",
+        },
         {
           name: "to",
           label: "Receiver",
@@ -751,6 +839,17 @@ export default defineComponent({
           label: "Amount",
           field: "value",
           align: "left",
+          sortable: true,
+          // style: "border-bottom: 1px solid green",
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 150px",
+        },
+        {
+          name: "numConfirmations",
+          label: "Confirmations",
+          field: "numConfirmations",
+          align: "center",
           sortable: true,
           // style: "border-bottom: 1px solid green",
           headerClasses: "bg-teal-5 text-white",
@@ -898,20 +997,23 @@ export default defineComponent({
       this.transactionInfo.confirmations = res.numConfirmations;
     },
 
+    async submitTransaction() {
+      const res = await icoContract.methods.submitTransaction(this.functions.submitTransactionTo,this.functions.submitTransactionAmount).send({from: this.currentAccount});
+      console.log(res);
+    },
+
     async getAllTransactions() {
       const res = await icoContract.methods.getAllTransactions().call();
       this.rows = res;
       console.log("DATA", this.rows);
     },
 
-    async submitTransaction() {},
+    async confirmTransaction(data) {
+      console.log("DATA", data);
+    },
 
-    async confirmTransactionIndex() {},
-
-    async executeTransactionIndex() {},
-
-    async submitTest(data) {
-      console.log("DATA", data.name);
+    async executeTransaction() {
+      console.log("DATA", data);
     },
   },
 });

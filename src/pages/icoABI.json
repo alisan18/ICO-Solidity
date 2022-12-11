@@ -300,7 +300,8 @@
               "internalType": "uint256",
               "name": "numConfirmations",
               "type": "uint256"
-            }
+            },
+            { "internalType": "uint256", "name": "index", "type": "uint256" }
           ],
           "internalType": "struct ICO.Transaction[]",
           "name": "",
@@ -355,7 +356,8 @@
           "internalType": "uint256",
           "name": "numConfirmations",
           "type": "uint256"
-        }
+        },
+        { "internalType": "uint256", "name": "index", "type": "uint256" }
       ],
       "stateMutability": "view",
       "type": "function"
@@ -464,22 +466,6 @@
       "inputs": [],
       "name": "totalSupply",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "name": "transactions",
-      "outputs": [
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "value", "type": "uint256" },
-        { "internalType": "bool", "name": "executed", "type": "bool" },
-        {
-          "internalType": "uint256",
-          "name": "numConfirmations",
-          "type": "uint256"
-        }
-      ],
       "stateMutability": "view",
       "type": "function"
     },
