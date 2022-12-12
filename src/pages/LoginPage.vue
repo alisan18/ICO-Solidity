@@ -109,6 +109,8 @@
           style="height: 40px"
         >
           Account Verified
+          <q-space />
+          <q-btn flat label="x" class="text-white q-ml-md" v-close-popup />
         </q-bar>
         <q-card-section>
           <div class="text-subtitle1 text-center text-grey-8">
@@ -119,7 +121,6 @@
           <div class="text-center">
             <div class="col-12 col-md-4 q-mb-md">
               <q-btn
-                no-caps
                 :loading="loading"
                 @click="connectMetamask"
                 color="orange-7"
@@ -127,7 +128,7 @@
                 class="text-bold"
                 >Connect to Metamask
                 <template v-slot:loading>
-                  Connecting
+                  CONNECTING
                   <q-spinner-dots class="q-ml-sm" color="white" size="1em" />
                 </template>
               </q-btn>
@@ -137,29 +138,21 @@
       </q-card>
     </q-dialog>
   </div>
-
-  <!-- <div class="fullscreen text-dark text-center q-pa-md flex flex-center">
-      <div>
-        <div class="text-h1">Login Page</div>
-
-        <div class="text-h2" style="opacity: 0.4">Oops. Nothing here...</div>
-
-        <q-btn
-          no-caps
-          glossy
-          class="text-h6 q-mt-xl"
-          text-color="teal-5"
-          label="Go Home"
-          to="/Login"
-        />
-      </div>
-    </div> -->
 </template>
 
 <script>
 import { defineComponent } from "vue";
+import Web3 from "web3";
+import icoAbi from "./icoABI.json";
 
 const provider = window.ethereum;
+const web3 = new Web3(provider);
+const icoContractAbi = icoAbi.abi;
+
+const icoContract = new web3.eth.Contract(
+  icoContractAbi,
+  process.env.CONTRACT_ADDRESS
+);
 
 export default defineComponent({
   name: "LoginPage",
@@ -187,24 +180,35 @@ export default defineComponent({
     },
 
     async connectMetamask() {
+      this.loading = true;
       if (provider) {
         const res = await ethereum.request({ method: "eth_requestAccounts" });
         const account = res[0];
         this.currentAccount = account;
         console.log(this.currentAccount);
+        await this.checkisOwner();
+        this.loading = false;
       } else {
         console.log("Please Install Metamask!");
+        this.loading = false;
       }
 
-      if (
-        this.currentAccount === "0x07465a0cde39d1fa5622d69055545435a99eaca0"
-      ) {
-        this.isAdmin = true;
-        console.log(this.isAdmin);
-        this.$router.push({ path: "/admin" });
-      } else {
+      if (this.isAdmin != true) {
         this.$router.push({ path: "/user" });
-        console.log("IsADMIN", this.isAdmin);
+      } else {
+        this.$router.push({ path: "/admin" });
+      }
+    },
+
+    async checkisOwner() {
+      try {
+        const res = await icoContract.methods
+          .isOwner(this.currentAccount)
+          .call();
+        console.log(res);
+        this.isAdmin = res;
+      } catch (error) {
+        console.log(error);
       }
     },
   },

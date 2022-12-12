@@ -107,7 +107,7 @@
                   Name :
                 </span>
                 <span class="text-subtitle1 q-ml-sm">
-                  Accentue Blockchain Token</span
+                  Accenture Blockchain Token</span
                 >
                 <span class="q-ml-xl text-subtitle1 text-bold text-grey-9">
                   Minimum Funding Amount :
@@ -116,7 +116,12 @@
                 <span class="text-subtitle1 text-bold text-grey-9 q-ml-xl">
                   Total Funds Accumulated :
                 </span>
-                <span class="text-subtitle1 q-ml-sm"> {{}}</span>
+                <span
+                  v-if="totalFundedAmount"
+                  class="text-subtitle1 q-ml-sm text-green-9 text-bold"
+                >
+                  {{ totalFundedAmount }} Eth</span
+                >
               </div>
               <div>
                 <span class="text-subtitle1 text-bold text-grey-9">
@@ -227,56 +232,15 @@
                     @click="getConversionRate"
                   />
                 </div>
-                <div class="col-12 col-md-4">
+                <div
+                  v-if="this.tokenInfo.conversionRate"
+                  class="col-12 col-md-4"
+                >
                   <span class="text-subtitle1 text-bold text-grey-9">
                     Rate :
                   </span>
-                  <span
-                    v-if="this.tokenInfo.conversionRate"
-                    class="text-h6 text-bold text-deep-orange"
-                  >
+                  <span class="text-h6 text-bold text-deep-orange">
                     ${{ tokenInfo.conversionRate }}</span
-                  >
-                </div>
-              </div>
-
-              <div class="row q-ml-sm q-mt-sm">
-                <div class="col-12 col-md-12">
-                  <span class="text-bold text-grey-9 text-subtitle1">
-                    BUYERS</span
-                  >
-                </div>
-                <div class="col-12 col-md-3">
-                  <q-input
-                    v-model="functions.buyersList"
-                    label="Input index"
-                    outlined
-                    dense
-                    placeholder="index number"
-                  />
-                </div>
-                <div class="col-12 col-md-1 q-ml-sm">
-                  <q-btn
-                    color="secondary"
-                    glossy
-                    label="Query"
-                    @click="getBuyersList"
-                  />
-                </div>
-                <div class="col-12 col-md-3">
-                  <span class="text-subtitle1 text-bold text-grey-9">
-                    Address :
-                  </span>
-                  <span class="text-subtitle1 text-bold text-deep-orange">
-                    {{ tokenInfo.address }}</span
-                  >
-                </div>
-                <div class="col-12 col-md-2">
-                  <span class="text-subtitle1 text-bold text-grey-9">
-                    Amount :
-                  </span>
-                  <span class="text-subtitle1 text-bold text-deep-orange">
-                    {{ tokenInfo.amount }}</span
                   >
                 </div>
               </div>
@@ -313,6 +277,17 @@
                   @click="timeLock"
                 />
               </div>
+              <div class="col-12 col-md-4 q-ml-lg">
+                <span class="text-bold text-grey-9 text-subtitle1">
+                  End Time :
+                </span>
+                <span
+                  v-if="endTime"
+                  class="text-bold text-grey-9 text-subtitle1 q-ml-sm"
+                >
+                  {{ endTime }}
+                </span>
+              </div>
             </div>
 
             <div class="row q-ml-sm q-mt-md">
@@ -334,7 +309,7 @@
                   Remaining Time :
                 </span>
                 <span class="text-subtitle1 text-bold text-deep-orange">
-                  {{ tokenInfo.timeLeft }}</span
+                  {{ tokenInfo.timeLeft }}s</span
                 >
               </div>
             </div>
@@ -588,9 +563,58 @@
       </q-slide-transition>
     </div>
 
+    <div class="q-mt-md q-pl-xl q-pr-xl">
+      <q-toolbar class="full-width bg-secondary">
+        <q-toolbar-title class="text-white text-h6">
+          BUYERS TABLE
+        </q-toolbar-title>
+        <q-separator vertical size="2px" />
+        <q-btn
+          flat
+          no-caps
+          :label="showBuyersTable == true ? 'Hide' : 'Show'"
+          color="white"
+          class="text-h6"
+          stretch
+          @click="showBuyersTable = !showBuyersTable"
+        />
+        <q-separator vertical size="2px" />
+        <q-separator vertical size="2px" />
+      </q-toolbar>
+    </div>
     <div class="q-pl-xl q-pr-xl">
       <q-slide-transition appear>
-        <q-card v-if="showMultiSigWrite"> </q-card>
+        <q-card v-if="showBuyersTable">
+          <q-card-section>
+            <div class="q-mt-xl q-mb-xl flex flex-center">
+              <q-table
+                :rows="buyers"
+                :columns="buyersColumns"
+                separator="cell"
+                title="Buyers List"
+                row-key="to"
+                :visible-buyersColumns="['address', 'amount', 'tokenBalance']"
+                :loading="loading"
+                :pagination="{ sortBy: 'id', rowsPerPage: 5, page: 1 }"
+                :rows-per-page-options="[5, 10, 15, 20, 0]"
+              >
+                <template #body="props">
+                  <q-tr :props="props">
+                    <q-td key="address" :props="props">
+                      {{ props.row.buyerAdd }}
+                    </q-td>
+                    <q-td key="amount" :props="props">
+                      {{ props.row.fundedAmount / 10 ** 18 }}
+                    </q-td>
+                    <q-td key="tokenBalance" :props="props">
+                      {{ (props.row.tokenBalance / 10 ** 18).toFixed(0) }}
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </q-card-section>
+        </q-card>
       </q-slide-transition>
     </div>
 
@@ -669,6 +693,25 @@
       </q-dialog>
     </div>
 
+    <q-dialog v-model="alert">
+      <q-card>
+        <q-toolbar class="bg-warning text-white">
+          <q-icon name="warning" size="27px" />
+          <div class="text-h6 q-ml-sm">Alert</div>
+        </q-toolbar>
+
+        <q-card-section class="q-mt-md flex flex center">
+          <div>
+            <span class="q-mt-md text-bold">Please set Time Lock first.</span>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="teal" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-page-sticky position="bottom-right" :offset="[22, 22]">
       <q-fab icon="airplay" label="settings" direction="left" color="accent">
         <q-fab-action
@@ -688,6 +731,7 @@
         />
       </q-fab>
     </q-page-sticky>
+
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -699,6 +743,13 @@ import { api } from "boot/axios";
 import { defineComponent, ref } from "vue";
 import Web3 from "web3";
 import icoAbi from "./icoABI.json";
+import {
+  QSpinnerBall,
+  QSpinnerBox,
+  QSpinnerFacebook,
+  QSpinnerOrbit,
+  QSpinnerRings,
+} from "quasar";
 
 const provider = window.ethereum;
 const web3 = new Web3(provider);
@@ -715,6 +766,7 @@ export default defineComponent({
 
   data() {
     return {
+      alert: false,
       tokenInformation: true,
       icoContractView: true,
       tokenContractView: true,
@@ -728,11 +780,12 @@ export default defineComponent({
       showRead: false,
       showTimeLock: false,
       showMultiSigRead: false,
-      showMultiSigWrite: false,
+      showBuyersTable: false,
       totalSupply: "",
       currentAccount: "",
       ethBalance: "",
       loginTime: "",
+      totalFundedAmount: "",
       functions: {
         getBalanceOf: "",
         conversionRate: "",
@@ -756,6 +809,7 @@ export default defineComponent({
         mint: "",
         burn: "",
         getTimeLeft: "",
+        endTime: "",
       },
       transactionInfo: {
         receiver: "",
@@ -826,7 +880,7 @@ export default defineComponent({
           label: "Revoke",
           field: "revoke",
           align: "center",
-          sortable: true,
+          sortable: false,
           // style: "border-bottom: 1px solid green",
           headerClasses: "bg-teal-5 text-white",
           headerStyle: "font-size: 1.2em",
@@ -837,7 +891,7 @@ export default defineComponent({
           label: "Confirm",
           field: "confirm",
           align: "center",
-          sortable: true,
+          sortable: false,
           // style: "border-bottom: 1px solid green",
           headerClasses: "bg-teal-5 text-white",
           headerStyle: "font-size: 1.2em",
@@ -848,25 +902,75 @@ export default defineComponent({
           label: "Execute",
           field: "execute",
           align: "center",
-          sortable: true,
+          sortable: false,
           // style: "border-bottom: 1px solid green",
           headerClasses: "bg-teal-5 text-white",
           headerStyle: "font-size: 1.2em",
           style: "width: 200px",
         },
       ],
+      buyers: [],
+      buyersColumns: [
+        {
+          name: "address",
+          label: "Address",
+          field: "address",
+          align: "center",
+          sortable: true,
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 300px",
+        },
+        {
+          name: "amount",
+          label: "Amount (Eth)",
+          field: "amount",
+          align: "center",
+          sortable: true,
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 300px",
+        },
+        {
+          name: "tokenBalance",
+          label: "Token Balance",
+          field: "tokenBalance",
+          align: "center",
+          sortable: true,
+          headerClasses: "bg-teal-5 text-white",
+          headerStyle: "font-size: 1.2em",
+          style: "width: 300px",
+        },
+      ],
     };
   },
 
   async created() {
+    this.showLoadingScreen();
     await this.checkConnection();
     await this.getLoginTime();
     await this.getAllTransactions();
+    await this.getEndTime();
     await this.getTotalSupply();
+    await this.getFundedAmount();
+    await this.getBuyersList();
+    this.$q.loading.hide();
     // this.showTransactionConfirmed();
   },
 
   methods: {
+    showLoadingScreen() {
+      this.$q.loading.show({
+        spinner: QSpinnerFacebook,
+        spinnerColor: "deep-orange",
+        spinnerSize: 175,
+        backgroundColor: "blue-grey-10",
+        message: "Fetching details from blockchain. Please wait . . .",
+        messageColor: "white",
+      });
+    },
+    // this.$q.loading.hide();
+
     showTransactionConfirmed() {
       this.$q.notify({
         // actions: [
@@ -972,15 +1076,24 @@ export default defineComponent({
       }
     },
 
-    //BUGGY
-    async getBuyersList() {
+    async getFundedAmount() {
       try {
-        const res = await icoContract.methods
-          .buyersList(this.functions.buyersList)
-          .call();
+        const res = await icoContract.methods.getFundedAmount().call();
+        const read = parseInt(res) / 10 ** 18;
+        this.totalFundedAmount = read.toFixed(2);
         console.log(res);
       } catch (error) {
         console.log("ERROR", error);
+      }
+    },
+
+    async getBuyersList() {
+      try {
+        const res = await icoContract.methods.getAllBuyerList().call();
+        this.buyers = res;
+        console.log("BUYERS LIST", this.buyers);
+      } catch (error) {
+        console.log(error);
       }
     },
 
@@ -1032,6 +1145,15 @@ export default defineComponent({
       }
     },
 
+    async getEndTime() {
+      try {
+        const res = await icoContract.methods.getOpenTimeLeft().call();
+        this.endTime = new Date(res * 1000).toLocaleString();
+      } catch (error) {
+        // console.log("ERROR", error);
+      }
+    },
+
     async getTimeLeft() {
       try {
         const res = await icoContract.methods.getTimeLeft().call();
@@ -1039,6 +1161,9 @@ export default defineComponent({
         this.tokenInfo.timeLeft = res;
       } catch (error) {
         console.log("ERROR", error);
+        if (error) {
+          this.alert = true;
+        }
       }
     },
 

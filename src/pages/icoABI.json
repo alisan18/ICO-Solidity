@@ -14,6 +14,13 @@
     },
     {
       "inputs": [
+        { "internalType": "string", "name": "_close", "type": "string" }
+      ],
+      "name": "close",
+      "type": "error"
+    },
+    {
+      "inputs": [
         { "internalType": "uint256", "name": "openTime", "type": "uint256" }
       ],
       "name": "closed",
@@ -243,7 +250,12 @@
       "name": "buyersList",
       "outputs": [
         { "internalType": "address", "name": "buyerAdd", "type": "address" },
-        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        {
+          "internalType": "uint256",
+          "name": "fundedAmount",
+          "type": "uint256"
+        },
+        { "internalType": "uint256", "name": "tokenBalance", "type": "uint256" }
       ],
       "stateMutability": "view",
       "type": "function"
@@ -289,6 +301,36 @@
     },
     {
       "inputs": [],
+      "name": "getAllBuyerList",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "buyerAdd",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fundedAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenBalance",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct ICO.Buyers[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "getAllTransactions",
       "outputs": [
         {
@@ -316,6 +358,20 @@
         { "internalType": "uint256", "name": "ethAmount", "type": "uint256" }
       ],
       "name": "getConversionRate",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getFundedAmount",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOpenTimeLeft",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
       "stateMutability": "view",
       "type": "function"

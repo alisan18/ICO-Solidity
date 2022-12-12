@@ -70,7 +70,7 @@
     <div class="text-center flex flex-center">
       <div>
         <span class="text-subtitle1 text-white text-bold">Account Type: </span>
-        <span class="text-body1 text-white">User</span>
+        <span class="text-body1 text-white">Buyer</span>
       </div>
       <div>
         <span class="q-ml-xl text-subtitle1 text-white text-bold"
@@ -82,8 +82,8 @@
 
     <q-separator class="q-mt-md" size="2px" color="teal" inset="" />
 
-    <div class="q-mt-xl q-pl-xl q-pr-xl">
-      <q-toolbar class="full-width bg-yellow-10">
+    <div class="q-mt-xl flex flex-center">
+      <q-toolbar class="bg-yellow-10" style="width: 900px">
         <q-toolbar-title class="text-white text-h6">
           ATCP TOKEN INFORMATIONS
         </q-toolbar-title>
@@ -103,9 +103,9 @@
       </q-toolbar>
     </div>
 
-    <div class="q-pl-xl q-pr-xl">
+    <div class="flex flex-center">
       <q-slide-transition appear>
-        <q-card v-if="showTokenInfo">
+        <q-card v-if="showTokenInfo" style="width: 900px">
           <q-card-section>
             <div>
               <span class="text-subtitle1 text-bold text-grey-9"> Name : </span>
@@ -272,7 +272,7 @@
             </div>
             <div class="col-12 col-md-5 q-ml-sm">
               <q-input
-                v-model="inpuConversionRate"
+                v-model="inputConversionRate"
                 label="Input eth amount"
                 outlined
                 dense
@@ -303,6 +303,13 @@ import { api } from "boot/axios";
 import { defineComponent, ref } from "vue";
 import Web3 from "web3";
 import icoAbi from "./icoABI.json";
+import {
+  QSpinnerBall,
+  QSpinnerBox,
+  QSpinnerFacebook,
+  QSpinnerOrbit,
+  QSpinnerRings,
+} from "quasar";
 
 const provider = window.ethereum;
 const web3 = new Web3(provider);
@@ -331,7 +338,7 @@ export default defineComponent({
       loginTime: "",
       totalSupply: "",
       price: "",
-      inpuConversionRate: "",
+      inputConversionRate: "",
       conversionRate: "",
       inputbuyToken: "",
       transferToAddress: "",
@@ -340,14 +347,27 @@ export default defineComponent({
   },
 
   async created() {
+    this.showLoadingScreen();
     await this.checkConnection();
     await this.getLoginTime();
     await this.getTotalSupply();
     await this.getBalanceOf();
+    this.$q.loading.hide();
     // this.showLoginSuccessful();
   },
 
   methods: {
+    showLoadingScreen() {
+      this.$q.loading.show({
+        spinner: QSpinnerFacebook,
+        spinnerColor: "deep-orange",
+        spinnerSize: 175,
+        backgroundColor: "blue-grey-10",
+        message: "Fetching details from blockchain. Please wait . . .",
+        messageColor: "white",
+      });
+    },
+
     showLoginSuccessful() {
       this.$q.notify({
         message: "Login Successful. Welcome!",
@@ -449,7 +469,7 @@ export default defineComponent({
     async getConversionRate() {
       try {
         const res = await icoContract.methods
-          .getConversionRate(this.inpuConversionRate)
+          .getConversionRate(this.inputConversionRate)
           .call();
         const read = parseInt(res) / 10 ** 18;
         this.conversionRate = read.toFixed(2);
@@ -463,9 +483,9 @@ export default defineComponent({
       try {
         const res = await icoContract.methods
           .buy()
-          .send({ from: this.currentAccount });
+          .send({ value: this.inputbuyToken, from: this.currentAccount });
         console.log(res);
-        this.getBalanceOf();
+        this.getBalanceOf(this.currentAccount);
       } catch (error) {
         console.log(error);
       }
