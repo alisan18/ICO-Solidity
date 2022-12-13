@@ -271,20 +271,18 @@
               </div>
               <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
+                  :loading="loadingTimelock"
                   color="secondary"
                   glossy
                   label="LOCK"
                   @click="timeLock"
                 />
               </div>
-              <div class="col-12 col-md-4 q-ml-lg">
+              <div v-if="endTime" class="col-12 col-md-4 q-ml-lg">
                 <span class="text-bold text-grey-9 text-subtitle1">
                   End Time :
                 </span>
-                <span
-                  v-if="endTime"
-                  class="text-bold text-grey-9 text-subtitle1 q-ml-sm"
-                >
+                <span class="text-bold text-grey-9 text-subtitle1 q-ml-sm">
                   {{ endTime }}
                 </span>
               </div>
@@ -365,7 +363,10 @@
                     @click="getBalanceOf"
                   />
                 </div>
-                <div class="col-12 col-md-4 q-ml-sm q-mt-sm">
+                <div
+                  v-if="tokenInfo.balanceOf"
+                  class="col-12 col-md-4 q-ml-sm q-mt-sm"
+                >
                   <span class="text-bold text-subtitle1">Balance : </span>
                   <span class="text-subtitle1">{{ tokenInfo.balanceOf }}</span>
                 </div>
@@ -395,7 +396,13 @@
                   />
                 </div>
                 <div class="col-12 col-md-1 q-ml-sm">
-                  <q-btn color="secondary" glossy label="MINT" @click="mint" />
+                  <q-btn
+                    :loading="loadingMint"
+                    color="secondary"
+                    glossy
+                    label="MINT"
+                    @click="mint"
+                  />
                 </div>
               </div>
 
@@ -424,7 +431,13 @@
                   />
                 </div>
                 <div class="col-12 col-md-1 q-ml-sm">
-                  <q-btn color="secondary" glossy label="burn" @click="burn" />
+                  <q-btn
+                    :loading="loadingBurn"
+                    color="secondary"
+                    glossy
+                    label="burn"
+                    @click="burn"
+                  />
                 </div>
               </div>
             </q-card-section>
@@ -563,59 +576,61 @@
       </q-slide-transition>
     </div>
 
-    <div class="q-mt-md q-pl-xl q-pr-xl">
-      <q-toolbar class="full-width bg-secondary">
-        <q-toolbar-title class="text-white text-h6">
-          BUYERS TABLE
-        </q-toolbar-title>
-        <q-separator vertical size="2px" />
-        <q-btn
-          flat
-          no-caps
-          :label="showBuyersTable == true ? 'Hide' : 'Show'"
-          color="white"
-          class="text-h6"
-          stretch
-          @click="showBuyersTable = !showBuyersTable"
-        />
-        <q-separator vertical size="2px" />
-        <q-separator vertical size="2px" />
-      </q-toolbar>
-    </div>
-    <div class="q-pl-xl q-pr-xl">
-      <q-slide-transition appear>
-        <q-card v-if="showBuyersTable">
-          <q-card-section>
-            <div class="q-mt-xl q-mb-xl flex flex-center">
-              <q-table
-                :rows="buyers"
-                :columns="buyersColumns"
-                separator="cell"
-                title="Buyers List"
-                row-key="to"
-                :visible-buyersColumns="['address', 'amount', 'tokenBalance']"
-                :loading="loading"
-                :pagination="{ sortBy: 'id', rowsPerPage: 5, page: 1 }"
-                :rows-per-page-options="[5, 10, 15, 20, 0]"
-              >
-                <template #body="props">
-                  <q-tr :props="props">
-                    <q-td key="address" :props="props">
-                      {{ props.row.buyerAdd }}
-                    </q-td>
-                    <q-td key="amount" :props="props">
-                      {{ props.row.fundedAmount / 10 ** 18 }}
-                    </q-td>
-                    <q-td key="tokenBalance" :props="props">
-                      {{ (props.row.tokenBalance / 10 ** 18).toFixed(0) }}
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
-            </div>
-          </q-card-section>
-        </q-card>
-      </q-slide-transition>
+    <div v-if="buyersTable">
+      <div class="q-mt-md q-pl-xl q-pr-xl">
+        <q-toolbar class="full-width bg-secondary">
+          <q-toolbar-title class="text-white text-h6">
+            BUYERS TABLE
+          </q-toolbar-title>
+          <q-separator vertical size="2px" />
+          <q-btn
+            flat
+            no-caps
+            :label="showBuyersTable == true ? 'Hide' : 'Show'"
+            color="white"
+            class="text-h6"
+            stretch
+            @click="showBuyersTable = !showBuyersTable"
+          />
+          <q-separator vertical size="2px" />
+          <q-separator vertical size="2px" />
+        </q-toolbar>
+      </div>
+      <div class="q-pl-xl q-pr-xl">
+        <q-slide-transition appear>
+          <q-card v-if="showBuyersTable">
+            <q-card-section>
+              <div class="q-mt-xl q-mb-xl flex flex-center">
+                <q-table
+                  :rows="buyers"
+                  :columns="buyersColumns"
+                  separator="cell"
+                  title="Buyers List"
+                  row-key="to"
+                  :visible-buyersColumns="['address', 'amount', 'tokenBalance']"
+                  :loading="loading"
+                  :pagination="{ sortBy: 'id', rowsPerPage: 5, page: 1 }"
+                  :rows-per-page-options="[5, 10, 15, 20, 0]"
+                >
+                  <template #body="props">
+                    <q-tr :props="props">
+                      <q-td key="address" :props="props">
+                        {{ props.row.buyerAdd }}
+                      </q-td>
+                      <q-td key="amount" :props="props">
+                        {{ props.row.fundedAmount / 10 ** 18 }}
+                      </q-td>
+                      <q-td key="tokenBalance" :props="props">
+                        {{ (props.row.tokenBalance / 10 ** 18).toFixed(0) }}
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-slide-transition>
+      </div>
     </div>
 
     <div>
@@ -673,6 +688,7 @@
           <q-card-section align="right">
             <div class="q-mt-sm">
               <q-btn
+                :loading="loadingSubmitTx"
                 no-caps
                 label
                 color="secondary"
@@ -717,17 +733,26 @@
         <q-fab-action
           color="red"
           icon="hide_source"
+          label="Info"
           @click="tokenInformation = !tokenInformation"
         />
         <q-fab-action
           color="orange"
           icon="token"
+          label="ICO"
           @click="icoContractView = !icoContractView"
         />
         <q-fab-action
           color="blue"
           icon="generating_tokens"
+          label="Token"
           @click="tokenContractView = !tokenContractView"
+        />
+        <q-fab-action
+          color="light-green"
+          icon="generating_tokens"
+          label="Buyers"
+          @click="buyersTable = !buyersTable"
         />
       </q-fab>
     </q-page-sticky>
@@ -749,6 +774,8 @@ import {
   QSpinnerFacebook,
   QSpinnerOrbit,
   QSpinnerRings,
+  QSpinnerHourglass,
+  QSpinnerInfinity,
 } from "quasar";
 
 const provider = window.ethereum;
@@ -770,6 +797,7 @@ export default defineComponent({
       tokenInformation: true,
       icoContractView: true,
       tokenContractView: true,
+      buyersTable: true,
       url: require("app/src/assets/acnlogo.png"),
       avatar: require("app/src/assets/boy-avatar.png"),
       dialogSubmit: false,
@@ -781,6 +809,10 @@ export default defineComponent({
       showTimeLock: false,
       showMultiSigRead: false,
       showBuyersTable: false,
+      loadingTimelock: false,
+      loadingMint: false,
+      loadingBurn: false,
+      loadingSubmitTx: false,
       totalSupply: "",
       currentAccount: "",
       ethBalance: "",
@@ -797,7 +829,7 @@ export default defineComponent({
         burnAmount: "",
         timeLock: "",
         getTimeLeft: "",
-        getTransaction: "",
+        // getTransaction: "",
         submitTransactionTo: "",
         submitTransactionAmount: "",
       },
@@ -969,6 +1001,17 @@ export default defineComponent({
         messageColor: "white",
       });
     },
+
+    showMultiSigLoading() {
+      this.$q.loading.show({
+        spinner: QSpinnerBox,
+        spinnerColor: "deep-orange",
+        spinnerSize: 180,
+        backgroundColor: "blue-grey-10",
+        message: "Waiting for Confirmations. Please wait . . .",
+        messageColor: "white",
+      });
+    },
     // this.$q.loading.hide();
 
     showTransactionConfirmed() {
@@ -985,6 +1028,17 @@ export default defineComponent({
         progress: true,
         iconSize: "30px",
         timeout: 6000,
+      });
+    },
+
+    showTransactionSuccess() {
+      this.$q.notify({
+        message: "Transaction Completed",
+        type: "positive",
+        position: "top-right",
+        progress: true,
+        iconSize: "30px",
+        timeout: 5000,
       });
     },
 
@@ -1111,37 +1165,56 @@ export default defineComponent({
     },
 
     async mint() {
+      this.loadingMint = true;
       try {
         const res = await icoContract.methods
-          .mint(this.functions.mintAddress, this.functions.mintAmount)
+          .mint(
+            this.functions.mintAddress,
+            this.functions.mintAmount.concat("000000000000000000")
+          )
           .send({ from: this.currentAccount });
         console.log(res);
-        this.getTotalSupply();
+        await this.getTotalSupply();
+        this.showTransactionConfirmed();
+        this.loadingMint = false;
       } catch (error) {
         console.log("ERROR", error);
+        this.loadingMint = false;
       }
     },
 
     async burn() {
+      this.loadingBurn = true;
       try {
         const res = await icoContract.methods
-          .burn(this.functions.burnAddress, this.functions.burnAmount)
+          .burn(
+            this.functions.burnAddress,
+            this.functions.burnAmount.concat("000000000000000000")
+          )
           .send({ from: this.currentAccount });
         console.log(res);
-        this.getTotalSupply();
+        await this.getTotalSupply();
+        this.showTransactionConfirmed();
+        this.loadingBurn = false;
       } catch (error) {
         console.log("ERROR", error);
+        this.loadingBurn = false;
       }
     },
 
     async timeLock() {
+      this.loadingTimelock = true;
       try {
         const res = await icoContract.methods
           .timeLock(this.functions.timeLock)
           .send({ from: this.currentAccount });
         console.log(res);
+        this.showTransactionSuccess();
+        await this.getEndTime();
+        this.loadingTimelock = false;
       } catch (error) {
         console.log("ERROR", error);
+        this.loadingTimelock = false;
       }
     },
 
@@ -1167,24 +1240,25 @@ export default defineComponent({
       }
     },
 
-    async getTransaction() {
-      try {
-        const res = await icoContract.methods
-          .getTransaction(this.functions.getTransaction)
-          .call();
-        this.data = res;
-        console.log("DATA", this.data);
-        this.transactionInfo.receiver = res.to;
-        const read = parseInt(res.value) / 10 ** 18;
-        this.transactionInfo.amount = read.toFixed(4);
-        this.transactionInfo.executed = res.executed;
-        this.transactionInfo.confirmations = res.numConfirmations;
-      } catch (error) {
-        console.log("ERROR", error);
-      }
-    },
+    // async getTransaction() {
+    //   try {
+    //     const res = await icoContract.methods
+    //       .getTransaction(this.functions.getTransaction)
+    //       .call();
+    //     this.data = res;
+    //     console.log("DATA", this.data);
+    //     this.transactionInfo.receiver = res.to;
+    //     const read = parseInt(res.value) / 10 ** 18;
+    //     this.transactionInfo.amount = read.toFixed(4);
+    //     this.transactionInfo.executed = res.executed;
+    //     this.transactionInfo.confirmations = res.numConfirmations;
+    //   } catch (error) {
+    //     console.log("ERROR", error);
+    //   }
+    // },
 
     async submitTransaction() {
+      this.loadingSubmitTx = true;
       try {
         const res = await icoContract.methods
           .submitTransaction(
@@ -1193,8 +1267,13 @@ export default defineComponent({
           )
           .send({ from: this.currentAccount });
         console.log(res);
+        this.showTransactionConfirmed();
+        this.loadingSubmitTx = false;
+        await this.getAllTransactions();
+        this.dialogSubmit = false;
       } catch (error) {
         console.log("ERROR", error);
+        this.loadingSubmitTx = false;
       }
     },
 
@@ -1209,38 +1288,47 @@ export default defineComponent({
     },
 
     async confirmTransaction(data) {
+      this.showMultiSigLoading();
       try {
         const res = await icoContract.methods
           .confirmTransaction(data.index)
           .send({ from: this.currentAccount });
         console.log(res);
-        this.getAllTransactions();
+        await this.getAllTransactions();
+        this.$q.loading.hide();
       } catch (error) {
         console.log("ERROR", error);
+        this.$q.loading.hide();
       }
     },
 
     async executeTransaction(data) {
+      this.showMultiSigLoading();
       try {
         const res = await icoContract.methods
           .executeTransaction(data.index)
           .send({ from: this.currentAccount });
         console.log(res);
-        this.getAllTransactions();
+        await this.getAllTransactions();
+        this.$q.loading.hide();
       } catch (error) {
         console.log(error);
+        this.$q.loading.hide();
       }
     },
 
     async revokeConfirmation(data) {
+      this.showMultiSigLoading();
       try {
         const res = await icoContract.methods
           .revokeConfirmation(data.index)
           .send({ from: this.currentAccount });
         console.log(res);
-        this.getAllTransactions();
+        await this.getAllTransactions();
+        this.$q.loading.hide();
       } catch (error) {
         console.log("ERROR", error);
+        this.$q.loading.hide();
       }
     },
   },

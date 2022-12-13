@@ -166,13 +166,28 @@
                 >
                 </q-input>
               </div>
-              <div class="col-12 col-md-1 q-ml-sm">
+              <!-- <div class="col-12 col-md-1 q-ml-sm">
                 <q-btn
                   @click="transferToken"
                   color="secondary"
                   glossy
                   label="Send"
                 />
+              </div> -->
+
+              <div class="col-12 col-md-4 q-ml-sm">
+                <q-btn
+                  no-caps
+                  :loading="loadingTransfer"
+                  @click="transferToken"
+                  color="teal"
+                  class="text-bold"
+                  >SEND TOKEN
+                  <template v-slot:loading>
+                    Sending
+                    <q-spinner-dots class="q-ml-sm" color="white" size="1em" />
+                  </template>
+                </q-btn>
               </div>
             </div>
           </q-card-section>
@@ -186,9 +201,21 @@
       </div>
     </div>
     <div class="flex flex-center">
-      <q-btn color="warning text-black text-bold text-h5" @click="buyToken"
-        >BUY</q-btn
-      >
+      <q-btn
+        style="width: 110px"
+        :loading="loadingBuy"
+        color="warning text-black text-bold text-h4"
+        @click="buyToken"
+        >BUY
+        <template v-slot:loading>
+          <q-spinner-box
+            :thickness="7"
+            class="q-ml-sm on-left"
+            color="white"
+            size="1.4em"
+          />
+        </template>
+      </q-btn>
     </div>
     <div class="row flex flex-center q-mt-md">
       <div class="col-12 col-md-2 bg-white">
@@ -328,10 +355,11 @@ export default defineComponent({
     return {
       url: require("app/src/assets/acnlogo.png"),
       avatar: require("app/src/assets/boy-avatar.png"),
-      loading: false,
+      loadingTransfer: false,
       isConnected: false,
       showTokenInfo: false,
       dialogPrice: false,
+      loadingBuy: false,
       currentAccount: "",
       ethBalance: "",
       tokenBalance: "",
@@ -359,7 +387,7 @@ export default defineComponent({
   methods: {
     showLoadingScreen() {
       this.$q.loading.show({
-        spinner: QSpinnerFacebook,
+        spinner: QSpinnerBall,
         spinnerColor: "deep-orange",
         spinnerSize: 175,
         backgroundColor: "blue-grey-10",
@@ -376,6 +404,17 @@ export default defineComponent({
         progress: true,
         iconSize: "30px",
         timeout: 6000,
+      });
+    },
+
+    showTransactionSuccess() {
+      this.$q.notify({
+        message: "Transaction Completed",
+        type: "positive",
+        position: "top-right",
+        progress: true,
+        iconSize: "30px",
+        timeout: 5000,
       });
     },
 
@@ -480,21 +519,37 @@ export default defineComponent({
     },
 
     async buyToken() {
+      this.loadingBuy = true;
       try {
         const res = await icoContract.methods
           .buy()
           .send({ value: this.inputbuyToken, from: this.currentAccount });
         console.log(res);
-        this.getBalanceOf(this.currentAccount);
+        this.getBalanceOf();
+        this.showTransactionSuccess();
+        this.loadingBuy = false;
       } catch (error) {
-        console.log(error);
+        console.log("ERROR", error);
+        this.loadingBuy = false;
       }
     },
 
     async transferToken() {
+      this.loadingTransfer = true;
       try {
+        const res = await icoContract.methods
+          .transfer(
+            this.transferToAddress,
+            this.transferToAmount.concat("000000000000000000")
+          )
+          .send({ from: this.currentAccount });
+        console.log(res);
+        this.getBalanceOf();
+        this.showTransactionSuccess();
+        this.loadingTransfer = false;
       } catch (error) {
-        console.log(error);
+        console.log("ERROR", error);
+        this.loadingTransfer = false;
       }
     },
   },
