@@ -987,7 +987,7 @@ export default defineComponent({
     await this.getFundedAmount();
     await this.getBuyersList();
     this.$q.loading.hide();
-    // this.showTransactionConfirmed();
+    this.showTransactionConfirmed();
   },
 
   methods: {
@@ -1175,7 +1175,7 @@ export default defineComponent({
           .send({ from: this.currentAccount });
         console.log(res);
         await this.getTotalSupply();
-        this.showTransactionConfirmed();
+        this.showTransactionSuccess();
         this.loadingMint = false;
       } catch (error) {
         console.log("ERROR", error);
@@ -1194,7 +1194,7 @@ export default defineComponent({
           .send({ from: this.currentAccount });
         console.log(res);
         await this.getTotalSupply();
-        this.showTransactionConfirmed();
+        this.showTransactionSuccess();
         this.loadingBurn = false;
       } catch (error) {
         console.log("ERROR", error);
@@ -1267,7 +1267,7 @@ export default defineComponent({
           )
           .send({ from: this.currentAccount });
         console.log(res);
-        this.showTransactionConfirmed();
+        this.showTransactionSuccess();
         this.loadingSubmitTx = false;
         await this.getAllTransactions();
         this.dialogSubmit = false;
@@ -1294,6 +1294,7 @@ export default defineComponent({
           .confirmTransaction(data.index)
           .send({ from: this.currentAccount });
         console.log(res);
+        this.showTransactionSuccess();
         await this.getAllTransactions();
         this.$q.loading.hide();
       } catch (error) {
@@ -1309,6 +1310,7 @@ export default defineComponent({
           .executeTransaction(data.index)
           .send({ from: this.currentAccount });
         console.log(res);
+        this.showTransactionSuccess();
         await this.getAllTransactions();
         this.$q.loading.hide();
       } catch (error) {
@@ -1324,6 +1326,7 @@ export default defineComponent({
           .revokeConfirmation(data.index)
           .send({ from: this.currentAccount });
         console.log(res);
+        this.showTransactionSuccess();
         await this.getAllTransactions();
         this.$q.loading.hide();
       } catch (error) {
